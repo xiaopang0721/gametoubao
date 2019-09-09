@@ -6,6 +6,6 @@ module gametoubao.data {
 		static readonly music_toubao: string = 'music/toubao/';
 		static readonly ui_toubao: string = "toubao_ui/game_ui/toubao/";
 		static readonly atlas_game_ui: string = "toubao_res/atlas/toubao_ui/game_ui/";
-		static readonly ui_toubao_sk: string = "toubao_ui/game_ui/toubao/sk";
+		static readonly ui_toubao_sk: string = "toubao_ui/game_ui/toubao/sk/";
 	}
 }
