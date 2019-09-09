@@ -35,7 +35,7 @@ module gametoubao.page {
 			this._viewUI.btn_chuji.on(LEvent.CLICK, this, this.onBtnClickWithTween);
 			this._viewUI.btn_zhongji.on(LEvent.CLICK, this, this.onBtnClickWithTween);
 			this._viewUI.btn_gaoji.on(LEvent.CLICK, this, this.onBtnClickWithTween);
-			(this._viewUI.view as TongyongHudPage).onOpen(this._game, ToubaoPageDef.GAME_NAME);
+			(this._viewUI.view as TongyongHudNqpPage).onOpen(this._game, ToubaoPageDef.GAME_NAME);
 			for (let index = 0; index < this._viewUI.box_right.numChildren; index++) {
 				this._viewUI.box_right._childs[index].visible = true;
 				Laya.Tween.from(this._viewUI.box_right._childs[index], {
