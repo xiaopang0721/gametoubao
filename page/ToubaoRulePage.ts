@@ -7,7 +7,7 @@ module gametoubao.page {
 		TYPE_CARD_BEISHU = 1,
 	}
 	export class ToubaoRulePage extends game.gui.base.Page {
-		private _viewUI: ui.game_ui.toubao.TouBao_GuiZeUI;
+		private _viewUI: ui.nqp.game_ui.toubao.TouBao_GuiZeUI;
 
 		constructor(v: Game, onOpenFunc?: Function, onCloseFunc?: Function) {
 			super(v, onOpenFunc, onCloseFunc);

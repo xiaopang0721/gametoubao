@@ -3,7 +3,7 @@
 */
 module gametoubao.page {
 	export class ToubaoPageOld extends game.gui.base.Page {
-		private _viewUI: ui.game_ui.toubao.TouBao_HUDUI;
+		private _viewUI: ui.nqp.game_ui.toubao.TouBao_HUDUI;
 		private _player: any;
 		private _playerInfo: any;
 		private _listArr: any;
