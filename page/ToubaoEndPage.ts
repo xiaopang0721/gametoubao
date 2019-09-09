@@ -3,7 +3,7 @@
 */
 module gametoubao.page {
 	export class ToubaoEndPage extends game.gui.base.Page {
-		private _viewUI: ui.game_ui.toubao.StopUI;
+		private _viewUI: ui.nqp.game_ui.toubao.StopUI;
 
 		constructor(v: Game, onOpenFunc?: Function, onCloseFunc?: Function) {
 			super(v, onOpenFunc, onCloseFunc);
