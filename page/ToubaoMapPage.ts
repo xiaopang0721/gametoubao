@@ -88,6 +88,10 @@ module gametoubao.page {
                 PathGameTongyong.atlas_game_ui_tongyong + "dating.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "general/effect/shaizi.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "general/effect/hulu1.atlas",
+                Path_game_toubao.ui_toubao_sk + "hgsb_0.png",
+				Path_game_toubao.ui_toubao_sk + "hgsb_1.png",
+				Path_game_toubao.ui_toubao_sk + "hgsb_2.png",
+				Path_game_toubao.ui_toubao_sk + "hgsb_3.png",
             ];
         }
 
