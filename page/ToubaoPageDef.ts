@@ -22,11 +22,7 @@ module gametoubao.page {
 		static myinit(str: string) {
 			super.myinit(str);
 			ToubaoClip.init();
-			if (WebConfig.baseplatform == PageDef.BASE_PLATFORM_TYPE_NQP) {
-				PageDef._pageClassMap[ToubaoPageDef.PAGE_TOUBAO] = ToubaoPage;
-			} else {
-				PageDef._pageClassMap[ToubaoPageDef.PAGE_TOUBAO] = ToubaoPageOld;
-			}
+			PageDef._pageClassMap[ToubaoPageDef.PAGE_TOUBAO] = ToubaoPage;
 			PageDef._pageClassMap[ToubaoPageDef.PAGE_TOUBAO_MAP] = ToubaoMapPage;
 			PageDef._pageClassMap[ToubaoPageDef.PAGE_TOUBAO_BEGIN] = ToubaoBeginPage;
 			PageDef._pageClassMap[ToubaoPageDef.PAGE_TOUBAO_RULE] = ToubaoRulePage;
