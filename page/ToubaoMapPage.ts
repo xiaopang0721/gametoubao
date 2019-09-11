@@ -89,9 +89,9 @@ module gametoubao.page {
                 PathGameTongyong.atlas_game_ui_tongyong + "general/effect/shaizi.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "general/effect/hulu1.atlas",
                 Path_game_toubao.ui_toubao_sk + "hgsb_0.png",
-				Path_game_toubao.ui_toubao_sk + "hgsb_1.png",
-				Path_game_toubao.ui_toubao_sk + "hgsb_2.png",
-				Path_game_toubao.ui_toubao_sk + "hgsb_3.png",
+                Path_game_toubao.ui_toubao_sk + "hgsb_1.png",
+                Path_game_toubao.ui_toubao_sk + "hgsb_2.png",
+                Path_game_toubao.ui_toubao_sk + "hgsb_3.png",
             ];
         }
 
@@ -930,7 +930,7 @@ module gametoubao.page {
                 TongyongPageDef.ins.alertRecharge("老板，您的金币不足哦~\n补充点金币去大杀四方吧~", () => {
                     this._game.uiRoot.general.open(DatingPageDef.PAGE_CHONGZHI);
                 }, () => {
-                }, false, PathGameTongyong.ui_tongyong_general + "btn_cz.png");
+                }, false, TongyongPageDef.TIPS_SKIN_STR["cz"]);
                 return;
             }
             if (this._curChip > money) {
