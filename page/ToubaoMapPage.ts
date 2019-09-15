@@ -35,7 +35,7 @@ module gametoubao.page {
     };
 
     export class ToubaoMapPage extends game.gui.base.Page {
-        private _viewUI: ui.game_ui.toubao.TouBaoUI;
+        private _viewUI: ui.nqp.game_ui.toubao.TouBaoUI;
         private _toubaoMgr: ToubaoMgr;
         private _toubaoStory: ToubaoStory;
         private _toubaoMapInfo: ToubaoMapInfo;
@@ -85,8 +85,13 @@ module gametoubao.page {
                 Path_game_toubao.atlas_game_ui + "toubao.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "tuichu.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "qifu.atlas",
+                PathGameTongyong.atlas_game_ui_tongyong + "dating.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "general/effect/shaizi.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "general/effect/hulu1.atlas",
+                Path_game_toubao.ui_toubao_sk + "hgsb_0.png",
+                Path_game_toubao.ui_toubao_sk + "hgsb_1.png",
+                Path_game_toubao.ui_toubao_sk + "hgsb_2.png",
+                Path_game_toubao.ui_toubao_sk + "hgsb_3.png",
             ];
         }
 
@@ -106,6 +111,7 @@ module gametoubao.page {
 
             this._viewUI.mouseThrough = true;
             this._game.playMusic(Path_game_toubao.music_toubao + "toubao_bgm.mp3");
+            this._viewUI.btn_spread.left = this._game.isFullScreen ? 25 : 10;
         }
 
         // 页面打开时执行函数
@@ -150,6 +156,16 @@ module gametoubao.page {
             this.onUpdateBetWin();
             this.onUpdateUnitOffline();
             this.onUpdateSeatedList();
+        }
+
+        private _curDiffTime: number;
+        update(diff: number) {
+            if (!this._curDiffTime || this._curDiffTime < 0) {
+                this._viewUI.btn_chongzhi.ani1.play(0, false);
+                this._curDiffTime = TongyongPageDef.CZ_PLAY_DIFF_TIME;
+            } else {
+                this._curDiffTime -= diff;
+            }
         }
 
         //帧间隔心跳
@@ -925,7 +941,7 @@ module gametoubao.page {
                 TongyongPageDef.ins.alertRecharge("老板，您的金币不足哦~\n补充点金币去大杀四方吧~", () => {
                     this._game.uiRoot.general.open(DatingPageDef.PAGE_CHONGZHI);
                 }, () => {
-                }, false, PathGameTongyong.ui_tongyong_general + "btn_cz.png");
+                }, true, TongyongPageDef.TIPS_SKIN_STR["cz"]);
                 return;
             }
             if (this._curChip > money) {
@@ -1090,12 +1106,12 @@ module gametoubao.page {
                 let unitIndex = this._unitSeated[i][0];
                 let unit = this._game.sceneObjectMgr.getUnitByIdx(unitIndex);
                 if (unit) {
-                    (this._seatUIList[i] as ui.game_ui.toubao.component.TouXiangWzUI).txt_name.text = getMainPlayerName(unit.GetName());
-                    (this._seatUIList[i] as ui.game_ui.toubao.component.TouXiangWzUI).txt_money.text = EnumToString.getPointBackNum(unit.GetMoney(), 2).toString();
-                    (this._seatUIList[i] as ui.game_ui.toubao.component.TouXiangWzUI).txt_name.fontSize = 15;
+                    (this._seatUIList[i] as ui.nqp.game_ui.toubao.component.TouXiangWzUI).txt_name.text = getMainPlayerName(unit.GetName());
+                    (this._seatUIList[i] as ui.nqp.game_ui.toubao.component.TouXiangWzUI).txt_money.text = EnumToString.getPointBackNum(unit.GetMoney(), 2).toString();
+                    (this._seatUIList[i] as ui.nqp.game_ui.toubao.component.TouXiangWzUI).txt_name.fontSize = 15;
                     let unitHeadImg = unit.GetHeadImg();
                     if (unitHeadImg) {
-                        (this._seatUIList[i] as ui.game_ui.toubao.component.TouXiangWzUI).img_icon.skin = PathGameTongyong.ui_tongyong_touxiang + "head_" + unitHeadImg + ".png";
+                        (this._seatUIList[i] as ui.nqp.game_ui.toubao.component.TouXiangWzUI).img_icon.skin = PathGameTongyong.ui_tongyong_touxiang + "head_" + unitHeadImg + ".png";
                     }
                     this._seatUIList[i].img_txk.visible = unit.GetVipLevel() > 0;
                     if (this._seatUIList[i].img_txk.visible) {
@@ -1114,24 +1130,24 @@ module gametoubao.page {
                                 this._seatUIList[i].img_qifu.visible = true;
                                 if (unit.GetQiFuType()) {
                                     let qifuImgUrl = this._nameStrInfo[unit.GetQiFuType() - 1];
-                                    (this._seatUIList[i] as ui.game_ui.toubao.component.TouXiangWzUI).img_icon.skin = PathGameTongyong.ui_tongyong_touxiang + "head_" + qifuImgUrl + ".png";
+                                    (this._seatUIList[i] as ui.nqp.game_ui.toubao.component.TouXiangWzUI).img_icon.skin = PathGameTongyong.ui_tongyong_touxiang + "head_" + qifuImgUrl + ".png";
                                 }
                             })
                         } else {
                             this._seatUIList[i].img_qifu.visible = true;
                             if (unit.GetQiFuType()) {
                                 let qifuImgUrl = this._nameStrInfo[unit.GetQiFuType() - 1];
-                                (this._seatUIList[i] as ui.game_ui.toubao.component.TouXiangWzUI).img_icon.skin = PathGameTongyong.ui_tongyong_touxiang + "head_" + qifuImgUrl + ".png";
+                                (this._seatUIList[i] as ui.nqp.game_ui.toubao.component.TouXiangWzUI).img_icon.skin = PathGameTongyong.ui_tongyong_touxiang + "head_" + qifuImgUrl + ".png";
                             }
                         }
                     } else {
                         this._seatUIList[i].img_qifu.visible = false;
                     }
                 } else {
-                    (this._seatUIList[i] as ui.game_ui.toubao.component.TouXiangWzUI).txt_name.text = "";
-                    (this._seatUIList[i] as ui.game_ui.toubao.component.TouXiangWzUI).txt_money.text = "点击入座";
-                    (this._seatUIList[i] as ui.game_ui.toubao.component.TouXiangWzUI).txt_name.fontSize = 20;
-                    (this._seatUIList[i] as ui.game_ui.toubao.component.TouXiangWzUI).img_icon.skin = PathGameTongyong.ui_tongyong_general + "tu_weizi.png";
+                    (this._seatUIList[i] as ui.nqp.game_ui.toubao.component.TouXiangWzUI).txt_name.text = "";
+                    (this._seatUIList[i] as ui.nqp.game_ui.toubao.component.TouXiangWzUI).txt_money.text = "点击入座";
+                    (this._seatUIList[i] as ui.nqp.game_ui.toubao.component.TouXiangWzUI).txt_name.fontSize = 20;
+                    (this._seatUIList[i] as ui.nqp.game_ui.toubao.component.TouXiangWzUI).img_icon.skin = PathGameTongyong.ui_tongyong_general + "tu_weizi.png";
                     this._seatUIList[i].img_qifu.visible = false;
                     this._seatUIList[i].qifu_type.visible = false;
                     this._seatUIList[i].img_txk.visible = false;
@@ -1325,7 +1341,7 @@ module gametoubao.page {
             super.close();
         }
     }
-    class MapRecordRender extends ui.game_ui.toubao.component.ZouShiDianShuUI {
+    class MapRecordRender extends ui.nqp.game_ui.toubao.component.ZouShiDianShuUI {
         private _game: Game;
         private _data: any;
         constructor() {
