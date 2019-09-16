@@ -88,10 +88,7 @@ module gametoubao.page {
                 PathGameTongyong.atlas_game_ui_tongyong + "dating.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "general/effect/shaizi.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "general/effect/hulu1.atlas",
-                Path_game_toubao.ui_toubao_sk + "hgsb_0.png",
-                Path_game_toubao.ui_toubao_sk + "hgsb_1.png",
-                Path_game_toubao.ui_toubao_sk + "hgsb_2.png",
-                Path_game_toubao.ui_toubao_sk + "hgsb_3.png",
+                PathGameTongyong.ui_tongyong_sk + "HeGuan.png",
             ];
         }
 
@@ -111,7 +108,8 @@ module gametoubao.page {
 
             this._viewUI.mouseThrough = true;
             this._game.playMusic(Path_game_toubao.music_toubao + "toubao_bgm.mp3");
-            this._viewUI.btn_spread.left = this._game.isFullScreen ? 25 : 10;
+            this._viewUI.btn_spread.left = this._game.isFullScreen ? 30 : 10;
+            this._viewUI.box_menu.left = this._game.isFullScreen ? 25 : 10;
         }
 
         // 页面打开时执行函数
