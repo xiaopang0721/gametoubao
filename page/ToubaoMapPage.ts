@@ -142,7 +142,7 @@ module gametoubao.page {
             this._game.sceneObjectMgr.on(ToubaoMapInfo.EVENT_SEATED_LIST, this, this.onUpdateSeatedList);//入座列表更新
             this._game.sceneObjectMgr.on(ToubaoMapInfo.EVENT_DICE_RECORD, this, this.onUpdateDice);//本局牌型更新
             this._game.sceneObjectMgr.on(ToubaoMapInfo.EVENT_BET_WIN_AREA, this, this.onUpdateBetWin);//本局中奖区域
-            this._game.network.addHanlder(Protocols.SMSG_OPERATION_FAILED, this, this.onOptHandler);
+            this._game.qifuMgr.on(QiFuMgr.QIFU_FLY, this, this.qifuFly);
 
             this.onUpdateStatus();
             this.onUpdateBattle();
@@ -376,21 +376,14 @@ module gametoubao.page {
 
         private _nameStrInfo: string[] = ["xs", "px", "gsy", "gg", "cs", "tdg"];
         private _qifuTypeImgUrl: string;
-        protected onOptHandler(optcode: number, msg: any) {
-            if (msg.type == Operation_Fields.OPRATE_GAME) {
-                switch (msg.reason) {
-                    case Operation_Fields.OPRATE_GAME_QIFU_SUCCESS_RESULT:
-                        let dataInfo = JSON.parse(msg.data);
-                        //打开祈福动画界面
-                        this._game.uiRoot.general.open(TongyongPageDef.PAGE_TONGYONG_QIFU_ANI, (page) => {
-                            page.dataSource = StringU.substitute(PathGameTongyong.ui_tongyong_qifu + "f_{0}1.png", this._nameStrInfo[dataInfo.qf_id - 1]);
-                        });
-                        //相对应的玩家精灵做出反应
-                        this._qifuTypeImgUrl = StringU.substitute(PathGameTongyong.ui_tongyong_qifu + "f_{0}2.png", this._nameStrInfo[dataInfo.qf_id - 1]);
-                        this.onUpdateUnit(dataInfo.qifu_index);
-                        break;
-                }
-            }
+        private qifuFly(dataSource: any): void {
+            if (!dataSource) return;
+            let dataInfo = dataSource;
+            this._game.qifuMgr.showFlayAni(this._viewUI.main_player, this._viewUI, dataSource, (dataInfo) => {
+                //相对应的玩家精灵做出反应
+                this._qifuTypeImgUrl = StringU.substitute(PathGameTongyong.ui_tongyong_qifu + "f_{0}2.png", this._nameStrInfo[dataInfo.qf_id - 1]);
+                this.onUpdateUnit(dataInfo.qifu_index);
+            });
         }
 
         private updateOnline(): void {
@@ -800,7 +793,7 @@ module gametoubao.page {
                     this._game.uiRoot.general.open(TongyongPageDef.PAGE_TONGYONG_SETTING)
                     break;
                 case this._viewUI.btn_qifu://设置
-                    this._game.uiRoot.general.open(TongyongPageDef.PAGE_TONGYONG_QIFU)
+                    this._game.uiRoot.general.open(DatingPageDef.PAGE_QIFU)
                     break;
                 case this._viewUI.btn_zhanji://战绩
                     this._game.uiRoot.general.open(TongyongPageDef.PAGE_TONGYONG_RECORD, (page) => {
@@ -1282,7 +1275,7 @@ module gametoubao.page {
             this._game.sceneObjectMgr.off(ToubaoMapInfo.EVENT_SEATED_LIST, this, this.onUpdateSeatedList);//入座列表更新
             this._game.sceneObjectMgr.off(ToubaoMapInfo.EVENT_DICE_RECORD, this, this.onUpdateDice);//本局牌型更新
             this._game.sceneObjectMgr.off(ToubaoMapInfo.EVENT_BET_WIN_AREA, this, this.onUpdateBetWin);//本局中奖区域
-            this._game.network.removeHanlder(Protocols.SMSG_OPERATION_FAILED, this, this.onOptHandler);
+            this._game.qifuMgr.off(QiFuMgr.QIFU_FLY, this, this.qifuFly);
         }
 
         public close(): void {
@@ -1327,7 +1320,7 @@ module gametoubao.page {
                 this._game.sceneObjectMgr.off(ToubaoMapInfo.EVENT_SEATED_LIST, this, this.onUpdateSeatedList);//入座列表更新
                 this._game.sceneObjectMgr.off(ToubaoMapInfo.EVENT_DICE_RECORD, this, this.onUpdateDice);//本局牌型更新
                 this._game.sceneObjectMgr.off(ToubaoMapInfo.EVENT_BET_WIN_AREA, this, this.onUpdateBetWin);//本局中奖区域
-                this._game.network.removeHanlder(Protocols.SMSG_OPERATION_FAILED, this, this.onOptHandler);
+                this._game.qifuMgr.off(QiFuMgr.QIFU_FLY, this, this.qifuFly);
 
                 this._game.uiRoot.HUD.close(ToubaoPageDef.PAGE_TOUBAO_BEGIN);
                 this._game.uiRoot.HUD.close(ToubaoPageDef.PAGE_TOUBAO_END);
