@@ -1275,7 +1275,6 @@ module gametoubao.page {
             this._game.sceneObjectMgr.off(ToubaoMapInfo.EVENT_SEATED_LIST, this, this.onUpdateSeatedList);//入座列表更新
             this._game.sceneObjectMgr.off(ToubaoMapInfo.EVENT_DICE_RECORD, this, this.onUpdateDice);//本局牌型更新
             this._game.sceneObjectMgr.off(ToubaoMapInfo.EVENT_BET_WIN_AREA, this, this.onUpdateBetWin);//本局中奖区域
-            this._game.qifuMgr.off(QiFuMgr.QIFU_FLY, this, this.qifuFly);
         }
 
         public close(): void {
