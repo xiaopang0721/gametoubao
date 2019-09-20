@@ -723,6 +723,7 @@ module gametoubao.page {
                     this._game.playSound(Path_game_toubao.music_toubao + "xiazhu_end.mp3");
                     break;
                 case MAP_STATUS.PLAY_STATUS_SHOW_DICE:// 开骰子阶段
+                    this._viewUI.ani1.gotoAndStop(0);
                     this._viewUI.ani2.play(0, false);
                     Laya.timer.once(600, this, () => {
                         this.afterShowDice();
