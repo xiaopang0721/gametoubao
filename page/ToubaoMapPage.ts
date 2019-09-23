@@ -297,9 +297,6 @@ module gametoubao.page {
             if (mainUnit) {
                 let headImg = mainUnit.GetHeadImg();
                 this._viewUI.main_player.txt_name.text = getMainPlayerName(mainUnit.GetName());
-                if (headImg) {
-                    this._viewUI.main_player.img_icon.skin = PathGameTongyong.ui_tongyong_touxiang + "head_" + headImg + ".png";
-                }
                 let money = EnumToString.getPointBackNum(mainUnit.GetMoney(), 2).toString();
                 this._viewUI.main_player.txt_money.text = money.toString();
                 let mainIdx = mainUnit.GetIndex();
@@ -332,6 +329,9 @@ module gametoubao.page {
                     }
                 } else {
                     this._viewUI.main_player.img_qifu.visible = false;
+                    if (headImg) {
+                        this._viewUI.main_player.img_icon.skin = PathGameTongyong.ui_tongyong_touxiang + "head_" + headImg + ".png";
+                    }
                 }
             }
             this.onUpdateChipGrey();
@@ -1102,10 +1102,7 @@ module gametoubao.page {
                     (this._seatUIList[i] as ui.nqp.game_ui.tongyong.TouXiangWzUI).txt_name.text = getMainPlayerName(unit.GetName());
                     (this._seatUIList[i] as ui.nqp.game_ui.tongyong.TouXiangWzUI).txt_money.text = EnumToString.getPointBackNum(unit.GetMoney(), 2).toString();
                     (this._seatUIList[i] as ui.nqp.game_ui.tongyong.TouXiangWzUI).txt_name.fontSize = 15;
-                    let unitHeadImg = unit.GetHeadImg();
-                    if (unitHeadImg) {
-                        (this._seatUIList[i] as ui.nqp.game_ui.tongyong.TouXiangWzUI).img_icon.skin = PathGameTongyong.ui_tongyong_touxiang + "head_" + unitHeadImg + ".png";
-                    }
+
                     this._seatUIList[i].img_txk.visible = unit.GetVipLevel() > 0;
                     if (this._seatUIList[i].img_txk.visible) {
                         this._seatUIList[i].img_txk.skin = PathGameTongyong.ui_tongyong_touxiang + "tu_v" + unit.GetVipLevel() + ".png";
@@ -1135,6 +1132,10 @@ module gametoubao.page {
                         }
                     } else {
                         this._seatUIList[i].img_qifu.visible = false;
+                        let unitHeadImg = unit.GetHeadImg();
+                        if (unitHeadImg) {
+                            (this._seatUIList[i] as ui.nqp.game_ui.tongyong.TouXiangWzUI).img_icon.skin = PathGameTongyong.ui_tongyong_touxiang + "head_" + unitHeadImg + ".png";
+                        }
                     }
                 } else {
                     (this._seatUIList[i] as ui.nqp.game_ui.tongyong.TouXiangWzUI).txt_name.text = "";
