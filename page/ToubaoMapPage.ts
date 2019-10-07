@@ -84,7 +84,7 @@ module gametoubao.page {
                 PathGameTongyong.atlas_game_ui_tongyong + "touxiang.atlas",
                 Path_game_toubao.atlas_game_ui + "toubao.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "tuichu.atlas",
-                PathGameTongyong.atlas_game_ui_tongyong + "qifu.atlas",
+                DatingPath.atlas_dating_ui + "qifu.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "dating.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "general/effect/shaizi.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "general/effect/hulu1.atlas",
