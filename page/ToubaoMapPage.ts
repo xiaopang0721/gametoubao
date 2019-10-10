@@ -1083,8 +1083,8 @@ module gametoubao.page {
                     seat.txt_name.text = getMainPlayerName(unit.GetName());
                     seat.txt_money.text = EnumToString.getPointBackNum(unit.GetMoney(), 2).toString();
                     seat.txt_name.fontSize = 15;
-                   
                     seat.img_txk.skin = TongyongUtil.getTouXiangKuangUrl(unit.GetHeadKuangImg(), 2);
+                    seat.img_txk.visible = true;
                     //祈福成功 头像上就有动画
                     if (qifu_index && unitIndex == qifu_index) {
                         seat.qifu_type.visible = true;
