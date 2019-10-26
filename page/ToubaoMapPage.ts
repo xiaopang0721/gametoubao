@@ -153,7 +153,6 @@ module gametoubao.page {
             this.onUpdateDice();
             this.onUpdateBetWin();
             this.onUpdateUnitOffline();
-            this.onUpdateSeatedList();
         }
 
         private _curDiffTime: number;
@@ -273,7 +272,7 @@ module gametoubao.page {
             let mainPlayer = this._game.sceneObjectMgr.mainPlayer;
             if (!mainPlayer) return;
             let mainPlayerInfo = mainPlayer.playerInfo;
-            this._viewUI.main_player.txt_name.text = getMainPlayerName(mainPlayerInfo.nickname);            
+            this._viewUI.main_player.txt_name.text = getMainPlayerName(mainPlayerInfo.nickname);
             this._viewUI.main_player.img_icon.skin = TongyongUtil.getHeadUrl(mainPlayer.playerInfo.headimg, 2);
             let money = EnumToString.getPointBackNum(mainPlayerInfo.money, 2).toString();
             this._viewUI.main_player.txt_money.text = money.toString();
@@ -311,7 +310,7 @@ module gametoubao.page {
                             this._viewUI.main_player.img_qifu.visible = true;
                             this._viewUI.main_player.img_icon.skin = TongyongUtil.getHeadUrl(mainUnit.GetHeadImg(), 2);
                         })
-                    } 
+                    }
                     // else {
                     //     this._viewUI.main_player.img_qifu.visible = true;
                     //     this._viewUI.main_player.img_icon.skin = TongyongUtil.getHeadUrl(mainUnit.GetHeadImg(), 2);
@@ -1089,21 +1088,17 @@ module gametoubao.page {
                         seat.qifu_type.visible = true;
                         seat.qifu_type.skin = this._qifuTypeImgUrl;
                         this.playTween1(seat.qifu_type, qifu_index);
-                    }
-                    //时间戳变化 才加上祈福标志
-                    if (TongyongUtil.getIsHaveQiFu(unit, this._game.sync.serverTimeBys)) {
-                        if (qifu_index && unitIndex == qifu_index) {
-                            Laya.timer.once(2500, this, () => {
-                                seat.img_qifu.visible = true;
-                                seat.img_icon.skin = TongyongUtil.getHeadUrl(unit.GetHeadImg(), 2);
-                            })
-                        } 
-                        // else {
-                        //     seat.img_qifu.visible = true;
-                        //     seat.img_icon.skin = TongyongUtil.getHeadUrl(unit.GetHeadImg(), 2);
-                        // }
+                        Laya.timer.once(2500, this, () => {
+                            seat.img_qifu.visible = true;
+                            seat.img_icon.skin = TongyongUtil.getHeadUrl(unit.GetHeadImg(), 2);
+                        })
                     } else {
-                        seat.img_qifu.visible = false;
+                        //时间戳变化 才加上祈福标志
+                        if (TongyongUtil.getIsHaveQiFu(unit, this._game.sync.serverTimeBys)) {
+                            seat.img_qifu.visible = true;
+                        } else {
+                            seat.img_qifu.visible = false;
+                        }
                         seat.img_icon.skin = TongyongUtil.getHeadUrl(unit.GetHeadImg(), 2);
                     }
                 } else {
