@@ -1081,6 +1081,7 @@ module gametoubao.page {
                     seat.txt_name.text = getMainPlayerName(unit.GetName());
                     seat.txt_money.text = EnumToString.getPointBackNum(unit.GetMoney(), 2).toString();
                     seat.txt_name.fontSize = 15;
+                    seat.img_icon.skin = TongyongUtil.getHeadUrl(unit.GetHeadImg(), 2);
                     seat.img_txk.skin = TongyongUtil.getTouXiangKuangUrl(unit.GetHeadKuangImg());
                     seat.img_txk.visible = true;
                     seat.img_vip.visible = unit.GetVipLevel() > 0;
@@ -1090,18 +1091,21 @@ module gametoubao.page {
                         seat.qifu_type.visible = true;
                         seat.qifu_type.skin = this._qifuTypeImgUrl;
                         this.playTween1(seat.qifu_type, qifu_index);
-                        Laya.timer.once(2500, this, () => {
-                            seat.img_qifu.visible = true;
-                            seat.img_icon.skin = TongyongUtil.getHeadUrl(unit.GetHeadImg(), 2);
-                        })
+                    } 
+                     //时间戳变化 才加上祈福标志
+                    if (TongyongUtil.getIsHaveQiFu(unit, this._game.sync.serverTimeBys)) {
+                        if (qifu_index && unitIndex == qifu_index) {
+                            Laya.timer.once(2500, this, () => {
+                                seat.img_qifu.visible = true;
+                                seat.img_icon.skin = TongyongUtil.getHeadUrl(unit.GetHeadImg(), 2);
+                            })
+                        } 
+                        // else {
+                        //     seat.img_qifu.visible = true;
+                        //     seat.img_icon.skin = TongyongUtil.getHeadUrl(unit.GetHeadImg(), 2);
+                        // }
                     } else {
-                        //时间戳变化 才加上祈福标志
-                        if (TongyongUtil.getIsHaveQiFu(unit, this._game.sync.serverTimeBys)) {
-                            seat.img_qifu.visible = true;
-                        } else {
-                            seat.img_qifu.visible = false;
-                        }
-                        seat.img_icon.skin = TongyongUtil.getHeadUrl(unit.GetHeadImg(), 2);
+                        seat.img_qifu.visible = false;
                     }
                 } else {
                     seat.txt_name.text = "";
