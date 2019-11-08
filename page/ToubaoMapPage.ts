@@ -156,7 +156,6 @@ module gametoubao.page {
             this.onUpdateDice();
             this.onUpdateBetWin();
             this.onUpdateUnitOffline();
-            this.onUpdateSeatedList();
         }
 
         private _curDiffTime: number;
@@ -276,7 +275,7 @@ module gametoubao.page {
             let mainPlayer = this._game.sceneObjectMgr.mainPlayer;
             if (!mainPlayer) return;
             let mainPlayerInfo = mainPlayer.playerInfo;
-            this._viewUI.main_player.txt_name.text = getMainPlayerName(mainPlayerInfo.nickname);            
+            this._viewUI.main_player.txt_name.text = getMainPlayerName(mainPlayerInfo.nickname);
             this._viewUI.main_player.img_icon.skin = TongyongUtil.getHeadUrl(mainPlayer.playerInfo.headimg, 2);
             let money = EnumToString.getPointBackNum(mainPlayerInfo.money, 2).toString();
             this._viewUI.main_player.txt_money.text = money.toString();
@@ -314,7 +313,7 @@ module gametoubao.page {
                             this._viewUI.main_player.img_qifu.visible = true;
                             this._viewUI.main_player.img_icon.skin = TongyongUtil.getHeadUrl(mainUnit.GetHeadImg(), 2);
                         })
-                    } 
+                    }
                     // else {
                     //     this._viewUI.main_player.img_qifu.visible = true;
                     //     this._viewUI.main_player.img_icon.skin = TongyongUtil.getHeadUrl(mainUnit.GetHeadImg(), 2);
@@ -492,12 +491,15 @@ module gametoubao.page {
         private createChip(startIdx: number, targetIdx: number, type: number, value: number, index: number, unitIndex: number) {
             let chip = this._game.sceneObjectMgr.createOfflineObject(SceneRoot.CHIP_MARK, ToubaoChip) as ToubaoChip;
             chip.setData(startIdx, targetIdx, type, value, index, unitIndex);
+            chip.visible = false;
             this._chipTotalList[targetIdx - 1].push(chip);
             if (this._toubaoMgr.isReConnect && this._curStatus != MAP_STATUS.PLAY_STATUS_BET) {
+                chip.visible = true;
                 chip.drawChip();
             }
             else {
                 Laya.timer.once(350, this, () => {
+                    chip.visible = true;
                     chip.sendChip();
                     this._game.playSound(Path_game_toubao.music_toubao + "chouma.mp3", false);
                 })
@@ -841,7 +843,6 @@ module gametoubao.page {
 
         //重复下注
         private repeatBet(): void {
-            if (this.showIsGuest()) return;
             if (this._betWait) return;//投注间隔
             let betArr = [];
             let total = 0;
@@ -895,7 +896,6 @@ module gametoubao.page {
         //区域下注
         private _betWait: boolean = false;
         private onAreaBetClick(index: number, e: LEvent): void {
-            if (this.showIsGuest()) return;
             if (this._curStatus != MAP_STATUS.PLAY_STATUS_BET) {
                 this._game.uiRoot.topUnder.showTips("当前不在下注时间，请在下注时间再进行下注！");
                 return;
@@ -968,7 +968,6 @@ module gametoubao.page {
 
         //选择座位入座
         private onSelectSeat(index: number): void {
-            if (this.showIsGuest()) return;
             let mainUnit = this._game.sceneObjectMgr.mainUnit;
             if (!mainUnit) return;
 
@@ -1000,16 +999,6 @@ module gametoubao.page {
                     }));
                 }
             }
-        }
-
-        private showIsGuest(): boolean {
-            if (WebConfig.baseplatform == PageDef.BASE_PLATFORM_TYPE_NQP) return false;
-            if (this._game.sceneObjectMgr.mainPlayer.IsIsGuest()) {
-                TongyongPageDef.ins.alertRecharge("亲爱的玩家，您正使用游客模式进行游戏，该模式下的游戏数据（包括付费数据）在删除游戏、更换设备后清空！对此造成的损失，本平台将不承担任何责任。为保障您的虚拟财产安全，我们强力建议您绑定手机号升级为正式账号。",
-                    () => { }, () => { }, true);
-                return true;
-            }
-            return false;
         }
 
         private resetAll(): void {
@@ -1096,6 +1085,7 @@ module gametoubao.page {
                     seat.txt_name.text = getMainPlayerName(unit.GetName());
                     seat.txt_money.text = EnumToString.getPointBackNum(unit.GetMoney(), 2).toString();
                     seat.txt_name.fontSize = 15;
+                    seat.img_icon.skin = TongyongUtil.getHeadUrl(unit.GetHeadImg(), 2);
                     seat.img_txk.skin = TongyongUtil.getTouXiangKuangUrl(unit.GetHeadKuangImg());
                     seat.img_txk.visible = true;
                     seat.img_vip.visible = unit.GetVipLevel() > 0;
@@ -1105,8 +1095,8 @@ module gametoubao.page {
                         seat.qifu_type.visible = true;
                         seat.qifu_type.skin = this._qifuTypeImgUrl;
                         this.playTween1(seat.qifu_type, qifu_index);
-                    }
-                    //时间戳变化 才加上祈福标志
+                    } 
+                     //时间戳变化 才加上祈福标志
                     if (TongyongUtil.getIsHaveQiFu(unit, this._game.sync.serverTimeBys)) {
                         if (qifu_index && unitIndex == qifu_index) {
                             Laya.timer.once(2500, this, () => {
@@ -1120,7 +1110,6 @@ module gametoubao.page {
                         // }
                     } else {
                         seat.img_qifu.visible = false;
-                        seat.img_icon.skin = TongyongUtil.getHeadUrl(unit.GetHeadImg(), 2);
                     }
                 } else {
                     seat.txt_name.text = "";
