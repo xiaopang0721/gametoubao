@@ -69,11 +69,11 @@ module gametoubao.page {
 				case this._viewUI.btn_gaoji:
 					this._game.sceneObjectMgr.intoStory(ToubaoPageDef.GAME_NAME, Web_operation_fields.GAME_ROOM_CONFIG_TOUBAO_4.toString(), true);
 					break;
-				case this._viewUI.btn_join:
-					let maplv = TongyongUtil.getJoinMapLv(ToubaoPageDef.GAME_NAME, this._playerInfo.money);
-					if (!maplv) return;
-					this._game.sceneObjectMgr.intoStory(ToubaoPageDef.GAME_NAME, maplv.toString(), true);
-					break;
+				// case this._viewUI.btn_join:
+				// 	let maplv = TongyongUtil.getJoinMapLv(ToubaoPageDef.GAME_NAME, this._playerInfo.money);
+				// 	if (!maplv) return;
+				// 	this._game.sceneObjectMgr.intoStory(ToubaoPageDef.GAME_NAME, maplv.toString(), true);
+				// 	break;
 				default:
 					break;
 			}
