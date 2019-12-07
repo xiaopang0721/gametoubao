@@ -27,7 +27,7 @@ module gametoubao.data {
 			this._type = type;
 			this._startIndex = startIdx;
 			this._targetIndex = targetIdx - 1;
-			this.rotateAngle = MathU.randomRange(0, 360);
+			// this.rotateAngle = MathU.randomRange(0, 360);
 			this._seatIndex = unitIndex;
 			this._radiusX = targetIdx <= 2 ? 30 : targetIdx <= 9 ? 28 : targetIdx <= 23 ? 10 : 40;
 			this._radiusY = targetIdx <= 2 ? 35 : targetIdx <= 9 ? 25 : targetIdx <= 23 ? 8 : 33;
@@ -53,11 +53,7 @@ module gametoubao.data {
 			this.targe_pos.x = target[index][0];
 			this.targe_pos.y = target[index][1];
 			if (!this.pos) return;
-			super.comebackChip();
-			Laya.Tween.to(this.pos, { x: this.targe_pos.x, y: this.targe_pos.y }, 500 + count * 15, Laya.Ease.backIn, Handler.create(this, () => {
-				this.isFinalPos = true;
-				game.sceneObjectMgr.clearOfflineObject(this);
-			}));
+			super.flyChipBase(500 + count * 15,game);
 		}
 
 		drawChip() {
