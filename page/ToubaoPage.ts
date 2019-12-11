@@ -3,11 +3,12 @@
 */
 module gametoubao.page {
 	export class ToubaoPage extends game.gui.base.Page {
-		private _viewUI: ui.nqp.game_ui.toubao.TouBao_HUDUI;
+		private _viewUI: ui.ajqp.game_ui.toubao.TouBao_HUDUI;
 		private _player: any;
 		private _playerInfo: any;
 		private _listArr: any;
 		private _listState: any;
+		private _xianhong: number[] = [5000, 8000, 25000, 50000];
 
 		constructor(v: Game, onOpenFunc?: Function, onCloseFunc?: Function) {
 			super(v, onOpenFunc, onCloseFunc);
@@ -18,10 +19,8 @@ module gametoubao.page {
 				PathGameTongyong.atlas_game_ui_tongyong + "hud.atlas",
 				PathGameTongyong.atlas_game_ui_tongyong + "dating.atlas",
 				PathGameTongyong.atlas_game_ui_tongyong + "logo.atlas",
-				Path_game_toubao.ui_toubao_sk + "hgsb_0.png",
-				Path_game_toubao.ui_toubao_sk + "hgsb_1.png",
-				Path_game_toubao.ui_toubao_sk + "hgsb_2.png",
-				Path_game_toubao.ui_toubao_sk + "hgsb_3.png",
+				PathGameTongyong.atlas_game_ui_tongyong_general + "anniu.atlas",
+				PathGameTongyong.atlas_game_ui_tongyong_general_effect + "anniug.atlas",
 			];
 			this._isNeedDuang = false;
 		}
@@ -39,16 +38,18 @@ module gametoubao.page {
 			this._viewUI.btn_chuji.on(LEvent.CLICK, this, this.onBtnClickWithTween);
 			this._viewUI.btn_zhongji.on(LEvent.CLICK, this, this.onBtnClickWithTween);
 			this._viewUI.btn_gaoji.on(LEvent.CLICK, this, this.onBtnClickWithTween);
-			this._viewUI.btn_join.on(LEvent.CLICK, this, this.onBtnClickWithTween);
 			(this._viewUI.view as TongyongHudPage).onOpen(this._game, ToubaoPageDef.GAME_NAME);
 			for (let index = 0; index < this._viewUI.box_right.numChildren; index++) {
 				this._viewUI.box_right._childs[index].visible = true;
 				Laya.Tween.from(this._viewUI.box_right._childs[index], {
-					right: -300
+					x: 1280
 				}, 200 + index * 100, Laya.Ease.linearNone);
 			}
-
 			this._game.playMusic(Path_game_toubao.music_toubao + "toubao_bgm.mp3");
+
+			for (let index = 0; index < this._xianhong.length; index++) {
+				this._viewUI["txt_xianhong" + index].text = this._xianhong[index].toString();
+			}
 		}
 
 
@@ -69,11 +70,6 @@ module gametoubao.page {
 				case this._viewUI.btn_gaoji:
 					this._game.sceneObjectMgr.intoStory(ToubaoPageDef.GAME_NAME, Web_operation_fields.GAME_ROOM_CONFIG_TOUBAO_4.toString(), true);
 					break;
-				// case this._viewUI.btn_join:
-				// 	let maplv = TongyongUtil.getJoinMapLv(ToubaoPageDef.GAME_NAME, this._playerInfo.money);
-				// 	if (!maplv) return;
-				// 	this._game.sceneObjectMgr.intoStory(ToubaoPageDef.GAME_NAME, maplv.toString(), true);
-				// 	break;
 				default:
 					break;
 			}
@@ -86,7 +82,6 @@ module gametoubao.page {
 				this._viewUI.btn_chuji.off(LEvent.CLICK, this, this.onBtnClickWithTween);
 				this._viewUI.btn_zhongji.off(LEvent.CLICK, this, this.onBtnClickWithTween);
 				this._viewUI.btn_gaoji.off(LEvent.CLICK, this, this.onBtnClickWithTween);
-				this._viewUI.btn_join.off(LEvent.CLICK, this, this.onBtnClickWithTween);
 			}
 
 			this._game.stopMusic();

@@ -35,7 +35,7 @@ module gametoubao.page {
     };
 
     export class ToubaoMapPage extends game.gui.base.Page {
-        private _viewUI: ui.nqp.game_ui.toubao.TouBaoUI;
+        private _viewUI: ui.ajqp.game_ui.toubao.TouBaoUI;
         private _toubaoMgr: ToubaoMgr;
         private _toubaoStory: ToubaoStory;
         private _toubaoMapInfo: ToubaoMapInfo;
@@ -45,10 +45,10 @@ module gametoubao.page {
         private _areaKuangUIList: Array<any> = [];//下注区域边框集合
         private _txtBetUIList: Array<any> = [];//下注文本UI集合
         private _seatUIList: Array<any> = [];//座位UI集合
-        private _chipUIList: Array<Button> = [];//筹码UI集合
-        private _chipGuangUIList: Array<LImage> = [];//筹码光效UI集合
+        private _chipUIList: Array<ui.ajqp.game_ui.tongyong.effect.Effect_cmUI> = [];//筹码UI集合
         private _chipArr: Array<number> = [];//筹码大小类型
         private _clipList: Array<ToubaoClip> = [];//飘字集合
+        private _imgdiList: Array<LImage> = [];//飘字集合
         private _robotConfig: any;//机器人配置
         private _szlimit: number;//上庄金币
         private _seatlimit: number;//入座金币
@@ -79,15 +79,19 @@ module gametoubao.page {
             this._isNeedDuang = false;
             this._delta = 1000;
             this._asset = [
+                DatingPath.atlas_dating_ui + "qifu.atlas",
+                Path_game_toubao.atlas_game_ui + "toubao.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "hud.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "general.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "touxiang.atlas",
-                Path_game_toubao.atlas_game_ui + "toubao.atlas",
-                PathGameTongyong.atlas_game_ui_tongyong + "tuichu.atlas",
-                DatingPath.atlas_dating_ui + "qifu.atlas",
+                PathGameTongyong.atlas_game_ui_tongyong + "chongzhi.atlas",
+                PathGameTongyong.atlas_game_ui_tongyong + "nyl.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "dating.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "general/effect/shaizi.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "general/effect/hulu1.atlas",
+                PathGameTongyong.atlas_game_ui_tongyong_general + "anniu.atlas",
+                PathGameTongyong.atlas_game_ui_tongyong_general_effect + "ksyx.atlas",
+                PathGameTongyong.atlas_game_ui_tongyong_general_effect + "ksxz.atlas",
                 PathGameTongyong.ui_tongyong_sk + "HeGuan.png",
             ];
         }
@@ -108,8 +112,7 @@ module gametoubao.page {
 
             this._viewUI.mouseThrough = true;
             this._game.playMusic(Path_game_toubao.music_toubao + "toubao_bgm.mp3");
-            this._viewUI.btn_spread.left = this._game.isFullScreen ? 30 : 10;
-            this._viewUI.box_menu.left = this._game.isFullScreen ? 25 : 10;
+            this._viewUI.box_left.left = this._game.isFullScreen ? 23 : 3;
         }
 
         // 页面打开时执行函数
@@ -117,7 +120,7 @@ module gametoubao.page {
             super.onOpen();
             //api充值不显示
             this._viewUI.btn_chongzhi.visible = !WebConfig.enterGameLocked;
-            
+
             this._viewUI.btn_spread.on(LEvent.CLICK, this, this.onBtnClickWithTween);
             this._viewUI.btn_back.on(LEvent.CLICK, this, this.onBtnClickWithTween);
             this._viewUI.btn_rule.on(LEvent.CLICK, this, this.onBtnClickWithTween);
@@ -127,7 +130,7 @@ module gametoubao.page {
             this._viewUI.btn_record.on(LEvent.CLICK, this, this.onBtnClickWithTween);
             this._viewUI.btn_chongzhi.on(LEvent.CLICK, this, this.onBtnClickWithTween);
             this._viewUI.btn_qifu.on(LEvent.CLICK, this, this.onBtnClickWithTween);
-            this._viewUI.btn_playerList.on(LEvent.CLICK, this, this.onClickHandle);
+            this._viewUI.btn_playerList.on(LEvent.CLICK, this, this.onBtnClickWithTween);
 
             this._game.sceneObjectMgr.on(SceneObjectMgr.EVENT_ADD_UNIT, this, this.onUnitAdd);
             this._game.sceneObjectMgr.on(SceneObjectMgr.EVENT_REMOVE_UNIT, this, this.onUnitRemove);
@@ -242,18 +245,18 @@ module gametoubao.page {
             for (let i = 0; i < 29; i++) {
                 for (let j = 0; j < this._betWinArea.length; j++) {
                     if (i + 1 == this._betWinArea[j]) {
-                        this.kuangShanShuo(i);
+                        this._areaKuangUIList[i].visible = true;
                         break;
                     }
                 }
             }
         }
 
-        private kuangShanShuo(index): void {
-            this._areaKuangUIList[index].visible = true;
-            Laya.timer.once(3000, this, () => {
-                this._areaKuangUIList[index].visible = false;
-            });
+        private kuangShanShuo(img) {
+            img.alpha = 0;
+            Laya.Tween.to(img, { alpha: 1 }, 333, null, Handler.create(this, () => {
+                this.kuangShanShuo(img);
+            }))
         }
 
         private onUpdateMapInfo(): void {
@@ -267,7 +270,6 @@ module gametoubao.page {
                 this.onUpdateRecord(1);
                 this.onUpdateDice();
                 this.updateOnline();
-                this.onUpdateChipGrey();
             }
         }
 
@@ -314,16 +316,11 @@ module gametoubao.page {
                             this._viewUI.main_player.img_icon.skin = TongyongUtil.getHeadUrl(mainUnit.GetHeadImg(), 2);
                         })
                     }
-                    // else {
-                    //     this._viewUI.main_player.img_qifu.visible = true;
-                    //     this._viewUI.main_player.img_icon.skin = TongyongUtil.getHeadUrl(mainUnit.GetHeadImg(), 2);
-                    // }
                 } else {
                     this._viewUI.main_player.img_qifu.visible = false;
                     this._viewUI.main_player.img_icon.skin = TongyongUtil.getHeadUrl(mainUnit.GetHeadImg(), 2);
                 }
             }
-            this.onUpdateChipGrey();
             this.onUpdateSeatedList(qifu_index);
         }
 
@@ -442,7 +439,6 @@ module gametoubao.page {
             let isMainPlayer: boolean = info.SeatIndex == mainIdx;
             if (isMainPlayer) {//主玩家
                 startIdx = 0;
-                this.moveHead(this._viewUI.main_player, this._mainHeadPos[0][0], this._mainHeadPos[0][1], this._mainHeadPos[1][0], this._mainHeadPos[1][1]);
             } else {//其他玩家
                 startIdx = 1;
                 for (let i = 0; i < this._unitSeated.length; i++) {
@@ -452,9 +448,6 @@ module gametoubao.page {
                         this.moveHead(this._seatUIList[i], this._headStartPos[i][0], this._headStartPos[i][1], this._headEndPos[i][0], this._headEndPos[i][1]);
                         startIdx = 3 + i;
                     }
-                }
-                if (startIdx == 1) {
-                    this.moveHead(this._viewUI.btn_playerList, 70, 657, 80, 647);
                 }
             }
             targetIdx = info.BetIndex;
@@ -466,8 +459,8 @@ module gametoubao.page {
         //头像出筹码动态效果
         private moveHead(view, startX, startY, endX, endY): void {
             Laya.Tween.clearAll(view);
-            Laya.Tween.to(view, { x: endX, y: endY }, 150, null, Handler.create(this, () => {
-                Laya.Tween.to(view, { x: startX, y: startY }, 150);
+            Laya.Tween.to(view, { x: endX, y: endY }, 50, null, Handler.create(this, () => {
+                Laya.Tween.to(view, { x: startX, y: startY }, 50);
             }))
         }
 
@@ -498,11 +491,9 @@ module gametoubao.page {
                 chip.drawChip();
             }
             else {
-                Laya.timer.once(350, this, () => {
-                    chip.visible = true;
-                    chip.sendChip();
-                    this._game.playSound(Path_game_toubao.music_toubao + "chouma.mp3", false);
-                })
+                chip.visible = true;
+                chip.sendChip();
+                this._game.playSound(Path_game_toubao.music_toubao + "chouma.mp3", false);
             }
             this._chipSortScore = index;//存下来最后一个筹码层级
         }
@@ -517,13 +508,14 @@ module gametoubao.page {
             })
         }
 
+        private _clipResult: any[] = [];
         private onBattleSettle(info: any): void {
             if (!this._game.sceneObjectMgr.mainUnit) return;
             if (this._game.sceneObjectMgr.mainUnit.GetIndex() == info.SeatIndex) {
                 this._mainPlayerBenefit = parseFloat(info.SettleVal);
             }
             if (info.SettleVal == 0) return;
-            this.addMoneyClip(info.SeatIndex, info.SettleVal);
+            this._clipResult.push([info.SeatIndex, info.SettleVal]);
         }
 
         private areaName = ["小", "大", "任一围骰", "围骰一", "围骰二", "围骰三", "围骰四", "围骰五", "围骰六",
@@ -540,7 +532,6 @@ module gametoubao.page {
 
         //结算飘筹码
         private flyChipEffect(): void {
-            if (this._curStatus != MAP_STATUS.PLAY_STATUS_SETTLE) return;
             let resultList: Array<number> = [];
             for (let i = 0; i < 29; i++) {
                 for (let j = 0; j < this._betWinArea.length; j++) {
@@ -602,11 +593,9 @@ module gametoubao.page {
 
         //金币变化 飘字clip
         public addMoneyClip(index: number, value: number): void {
-            let valueClip = value >= 0 ? new ToubaoClip(ToubaoClip.ADD_MONEY_FONT) : new ToubaoClip(ToubaoClip.SUB_MONEY_FONT);
+            let clip_money = value >= 0 ? new ToubaoClip(ToubaoClip.ADD_MONEY_FONT) : new ToubaoClip(ToubaoClip.SUB_MONEY_FONT);
             let preSkin = value >= 0 ? PathGameTongyong.ui_tongyong_general + "tu_jia.png" : PathGameTongyong.ui_tongyong_general + "tu_jian.png";
-            valueClip.scale(0.8, 0.8);
-            valueClip.anchorX = 0.5;
-            valueClip.setText(Math.abs(value), true, false, preSkin);
+            let img_di = value >= 0 ? new LImage(PathGameTongyong.ui_tongyong_general + "tu_yingqian.png") : new LImage(PathGameTongyong.ui_tongyong_general + "tu_shuqian.png");
             let playerIcon: any;
             if (index == this._game.sceneObjectMgr.mainUnit.GetIndex()) {
                 playerIcon = this._viewUI.main_player;
@@ -625,13 +614,27 @@ module gametoubao.page {
                 if (!bool) return;
                 playerIcon = this._seatUIList[seatIndex - 1];
             }
-            valueClip.x = playerIcon.clip_money.x;
-            valueClip.y = playerIcon.clip_money.y;
-            playerIcon.clip_money.parent.addChild(valueClip);
-            this._clipList.push(valueClip);
+            //飘字底
+            img_di.centerX = playerIcon.img_di.centerX;
+            img_di.centerY = playerIcon.img_di.centerY;
+            playerIcon.img_di.parent.addChild(img_di);
+            this._imgdiList.push(img_di);
+            playerIcon.img_di.visible = false;
+            //飘字
+            clip_money.setText(Math.abs(value), true, false, preSkin);
+            clip_money.centerX = playerIcon.clip_money.centerX;
+            clip_money.centerY = playerIcon.clip_money.centerY;
+            playerIcon.clip_money.parent.addChild(clip_money);
+            this._clipList.push(clip_money);
             playerIcon.clip_money.visible = false;
-            Laya.Tween.clearAll(valueClip);
-            Laya.Tween.to(valueClip, { y: valueClip.y - 25 }, 1500);
+            //飘字box缓动
+            playerIcon.box_clip.y = 57;
+            playerIcon.box_clip.visible = true;
+            Laya.Tween.clearAll(playerIcon.box_clip);
+            Laya.Tween.to(playerIcon.box_clip, { y: playerIcon.box_clip.y - 50 }, 1000);
+            //赢钱动画
+            playerIcon.effWin.visible = value > 0;
+            value > 0 && playerIcon.effWin.ani1.play(0, false);
         }
 
         //清理飘字clip
@@ -645,6 +648,16 @@ module gametoubao.page {
                 }
             }
             this._clipList = [];
+
+            if (this._imgdiList && this._imgdiList.length) {
+                for (let j: number = 0; j < this._imgdiList.length; j++) {
+                    let imgdi = this._imgdiList[j];
+                    imgdi.removeSelf();
+                    imgdi.destroy(true);
+                    imgdi = null;
+                }
+            }
+            this._imgdiList = [];
         }
 
         //更新地图状态
@@ -654,8 +667,7 @@ module gametoubao.page {
             let mapStatus = this._toubaoMapInfo.GetMapState()
             if (this._curStatus == mapStatus) return;
             this._curStatus = mapStatus;
-            this._viewUI.btn_repeat.disabled = this._curStatus != MAP_STATUS.PLAY_STATUS_BET;
-
+            this.onChipDisabled(this._curStatus == MAP_STATUS.PLAY_STATUS_BET);
             switch (this._curStatus) {
                 case MAP_STATUS.PLAY_STATUS_NONE:// 准备阶段
                     this.resetAll();
@@ -670,7 +682,7 @@ module gametoubao.page {
                     this._viewUI.hulu.visible = true;
                     this._viewUI.hulu.ani1.play(0, false);
                     this._game.playSound(Path_game_toubao.music_toubao + "yaotouzi.mp3", false)
-                    Laya.timer.frameOnce(65, this, this.afterRollDice);
+                    Laya.timer.frameOnce(55, this, this.afterRollDice);
                     break;
                 case MAP_STATUS.PLAY_STATUS_BET:// 下注阶段
                     if (this._toubaoMgr.isReConnect && Math.floor(this._toubaoMapInfo.GetCountDown() - this._game.sync.serverTimeBys) < 13) {
@@ -698,10 +710,22 @@ module gametoubao.page {
                         }
                         this._viewUI.btn_repeat.disabled = !bool;
 
-
+                        for (let i = 0; i < this._areaKuangUIList.length; i++) {
+                            this._areaKuangUIList[i].visible = true;
+                            this.kuangShanShuo(this._areaKuangUIList[i]);
+                            Laya.timer.once(1000, this, () => {
+                                this._areaKuangUIList[i].visible = false;
+                                this._areaKuangUIList[i].alpha = 1;
+                                Laya.Tween.clearAll(this._areaKuangUIList[i]);
+                                Laya.timer.clearAll(this._areaKuangUIList[i]);
+                            });
+                        }
                     }
                     break;
                 case MAP_STATUS.PLAY_STATUS_STOP_BET:// 停止下注阶段
+                    for (let i: number = 0; i < this._areaKuangUIList.length; i++) {
+                        this._areaKuangUIList[i].visible = false;
+                    }
                     this._pageHandle.pushClose({ id: ToubaoPageDef.PAGE_TOUBAO_BEGIN, parent: this._game.uiRoot.HUD });
                     this._pageHandle.pushOpen({ id: ToubaoPageDef.PAGE_TOUBAO_END, parent: this._game.uiRoot.HUD });
                     this._game.playSound(Path_game_toubao.music_toubao + "dingding_end.mp3");
@@ -727,11 +751,20 @@ module gametoubao.page {
                 case MAP_STATUS.PLAY_STATUS_SETTLE:// 结算阶段
                     this._pageHandle.pushClose({ id: ToubaoPageDef.PAGE_TOUBAO_END, parent: this._game.uiRoot.HUD });
                     this._viewUI.ani2.gotoAndStop(30);
-                    this._viewUI.hulu.visible = false;
                     this.onUpdateSeatedList();
+                    this._toubaoMgr.isReConnect = false;
+                    break;
+                case MAP_STATUS.PLAY_STATUS_SHOW_INFO:// 显示结算信息阶段
+                    this._viewUI.hulu.visible = false;
                     this.flyChipEffect();
                     if (!this._toubaoMgr.isReConnect) {
-                        Laya.timer.once(1000, this, () => {
+                        Laya.timer.once(2200, this, () => {
+                            if (this._clipResult && this._clipResult.length > 0) {
+                                for (let i = 0; i < this._clipResult.length; i++) {
+                                    let info = this._clipResult[i];
+                                    this.addMoneyClip(info[0], info[1]);
+                                }
+                            }
                             if (this._mainPlayerBenefit >= 0) {
                                 let rand = MathU.randomRange(1, 3);
                                 this._game.playSound(StringU.substitute(PathGameTongyong.music_tongyong + "win{0}.mp3", rand), true);
@@ -739,19 +772,9 @@ module gametoubao.page {
                                 let rand = MathU.randomRange(1, 4);
                                 this._game.playSound(StringU.substitute(PathGameTongyong.music_tongyong + "lose{0}.mp3", rand), true);
                             }
-                        });
+                        })
                     }
-                    this._toubaoMgr.isReConnect = false;
-                    break;
-                case MAP_STATUS.PLAY_STATUS_SHOW_INFO:// 显示结算信息阶段
-                    if (!this._toubaoMgr.isReConnect) {
-                        this.showSettleInfo();
-                    }
-                    if (this._viewUI.box_menu.y >= 0) {//每局重新开始把菜单收起来
-                        this._viewUI.box_menu.y = -this._viewUI.box_menu.height;
-                        this._viewUI.box_menu.visible = false;
-                        this._viewUI.btn_spread.visible = true;
-                    }
+
                     break;
                 case MAP_STATUS.PLAY_STATUS_RELAX:// 休息阶段
                     this._pageHandle.pushClose({ id: TongyongPageDef.PAGE_TONGYONG_SETTLE, parent: this._game.uiRoot.HUD });
@@ -764,17 +787,11 @@ module gametoubao.page {
             this._pageHandle.reset();//清空额外界面存储数组
         }
 
-        //点击事件
-        protected onClickHandle(e: LEvent): void {
-            //玩家列表
-            this._game.uiRoot.general.open(ToubaoPageDef.PAGE_TOUBAO_PLAYER_LIST);
-        }
-
         //按钮缓动回调
         protected onBtnTweenEnd(e: any, target: any): void {
             switch (target) {
                 case this._viewUI.btn_spread://菜单
-                    this.showMenu(true);
+                    this.menuTween(!this._viewUI.box_menu.visible);
                     break;
                 case this._viewUI.btn_record://战绩
                     this._game.uiRoot.general.open(ToubaoPageDef.PAGE_TOUBAO_ROAD);
@@ -788,8 +805,11 @@ module gametoubao.page {
                 case this._viewUI.btn_set://设置
                     this._game.uiRoot.general.open(TongyongPageDef.PAGE_TONGYONG_SETTING)
                     break;
-                case this._viewUI.btn_qifu://设置
+                case this._viewUI.btn_qifu://祈福
                     this._game.uiRoot.general.open(DatingPageDef.PAGE_QIFU)
+                    break;
+                case this._viewUI.btn_playerList://在线人数
+                    this._game.uiRoot.general.open(TongyongPageDef.PAGE_TONGYONG_PLAYER_LIST)
                     break;
                 case this._viewUI.btn_zhanji://战绩
                     this._game.uiRoot.general.open(TongyongPageDef.PAGE_TONGYONG_RECORD, (page) => {
@@ -808,21 +828,16 @@ module gametoubao.page {
                         this._game.showTips("游戏尚未结束，请先打完这局哦~");
                         return;
                     }
-                    TongyongPageDef.ins.alertClose("toubao", this, this.onClickCancle);
+                    this._game.sceneObjectMgr.leaveStory(true);
                     break;
                 default:
                     break;
             }
         }
 
-        //确定退出回调
-        private onClickCancle(): void {
-            this._game.sceneObjectMgr.leaveStory(true);
-        }
-
         //摇骰子定格
         private afterRollDice(): void {
-            this._viewUI.hulu.ani1.gotoAndStop(65);
+            this._viewUI.hulu.ani1.gotoAndStop(55);
             Laya.Tween.to(this._viewUI.hulu, { x: 646, y: 162, scaleX: 0.17, scaleY: 0.17 }, 500, null, Handler.create(this, () => {
                 this._viewUI.hulu.visible = false;
             }));
@@ -836,7 +851,7 @@ module gametoubao.page {
 
         //摇骰子定格后重现
         private reShowDice(): void {
-            this._viewUI.hulu.ani1.play(65, false);
+            this._viewUI.hulu.ani1.play(55, false);
             Laya.timer.once(500, this, this.onBroadcast);
             Laya.timer.once(1300, this, this.onUpdateResult);
         }
@@ -887,19 +902,32 @@ module gametoubao.page {
                     }
                 }
             }
+            this.moveHead(this._viewUI.main_player, this._mainHeadPos[0][0], this._mainHeadPos[0][1], this._mainHeadPos[1][0], this._mainHeadPos[1][1]);
             this._betWait = true;
-            Laya.timer.once(500, this, () => {
+            Laya.timer.once(100, this, () => {
                 this._betWait = false;
             })
         }
 
-        //区域下注
         private _betWait: boolean = false;
-        private onAreaBetClick(index: number, e: LEvent): void {
+        private onAreaBetMouseOut(index: number, e: LEvent): void {
+            if (this._curStatus == MAP_STATUS.PLAY_STATUS_BET) {
+                this._areaKuangUIList[index].visible = false;
+            }
+        }
+
+        private onAreaBetMouseDown(index: number, e: LEvent): void {
+            if (this._curStatus == MAP_STATUS.PLAY_STATUS_BET) {
+                this._areaKuangUIList[index].visible = true;
+            }
+        }
+
+        private onAreaBetMouseUp(index: number, e: LEvent): void {
             if (this._curStatus != MAP_STATUS.PLAY_STATUS_BET) {
                 this._game.uiRoot.topUnder.showTips("当前不在下注时间，请在下注时间再进行下注！");
                 return;
             }
+            this._areaKuangUIList[index].visible = false;
             if (this._betWait) return;//投注间隔
             let total = this._betMainList[index];
             if (this._curChip + total > this._betlimit) {
@@ -934,35 +962,73 @@ module gametoubao.page {
                 this._game.uiRoot.topUnder.showTips("老板，您的金币不足哦~");
                 return;
             }
+            this.moveHead(this._viewUI.main_player, this._mainHeadPos[0][0], this._mainHeadPos[0][1], this._mainHeadPos[1][0], this._mainHeadPos[1][1]);
             this._betWait = true;
-            Laya.timer.once(500, this, () => {
+            Laya.timer.once(100, this, () => {
                 this._betWait = false;
             })
             this._rebetList[index] += this._curChip;
             this._game.network.call_toubao_bet(this._curChip, index + 1)
         }
 
-        private onUpdateChipGrey() {
-            if (!this._game.sceneObjectMgr.mainUnit) return;
-            let money: number = this._game.sceneObjectMgr.mainUnit.GetMoney();
-            for (let i = 0; i < this._chipUIList.length; i++) {
-                let index = this._chipUIList.length - 1 - i;
-                if (money < this._chipArr[index]) {
-                    this._chipUIList[index].disabled = true;
-                    this._chipUIList[index].y = this._curChipY;
-                    this._chipGuangUIList[index].visible = false;
-                } else {
-                    this._chipUIList[index].disabled = false;
-                }
-            }
+        //筹码点击事件
+        private onClickChip(index: number, e: LEvent): void {
+            if (this._chipArr[index] == this._curChip) return;
+            this._game.uiRoot.btnTween(e.currentTarget);
+            this.onSelectChip(index);
         }
 
         //选择筹码
         private onSelectChip(index: number): void {
             this._curChip = this._chipArr[index];
             for (let i: number = 0; i < this._chipUIList.length; i++) {
-                this._chipGuangUIList[i].visible = i == index;
                 this._chipUIList[i].y = i == index ? this._curChipY - 10 : this._curChipY;
+                this._chipUIList[i].img0.visible = this._chipUIList[i].img1.visible = i == index;
+                if (i == index) {
+                    this._chipUIList[i].ani1.play(0, true);
+                } else {
+                    this._chipUIList[i].ani1.gotoAndStop(0);
+                }
+            }
+        }
+
+        //筹码是否置灰（是否下注阶段）
+        private onChipDisabled(isBetState: boolean): void {
+            this.onUpdateChipGrey(isBetState);
+            this._viewUI.btn_repeat.disabled = !isBetState;
+            if (isBetState) {
+                let index = this._chipArr.indexOf(this._curChip);
+                for (let i: number = 0; i < this._chipUIList.length; i++) {
+                    Laya.Tween.to(this._chipUIList[i], { y: i == index ? this._curChipY - 10 : this._curChipY }, 300);
+                    this._chipUIList[i].img0.visible = this._chipUIList[i].img1.visible = i == index;
+                    if (i == index) {
+                        this._chipUIList[i].ani1.play(0, true);
+                    } else {
+                        this._chipUIList[i].ani1.gotoAndStop(0);
+                    }
+                }
+            } else {
+                for (let i: number = 0; i < this._chipUIList.length; i++) {
+                    Laya.Tween.to(this._chipUIList[i], { y: this._curChipY + 10 }, 300);
+                    this._chipUIList[i].disabled = true;
+                    this._chipUIList[i].ani1.gotoAndStop(0);
+                    this._chipUIList[i].img0.visible = this._chipUIList[i].img1.visible = false;
+                }
+            }
+        }
+
+        private onUpdateChipGrey(isBetState: boolean) {
+            if (!this._game.sceneObjectMgr.mainUnit) return;
+            if (!isBetState) return;
+            let money: number = this._game.sceneObjectMgr.mainUnit.GetMoney();
+            for (let i = 0; i < this._chipUIList.length; i++) {
+                let index = this._chipUIList.length - 1 - i;
+                if (money < this._chipArr[index]) {
+                    this._chipUIList[index].disabled = true;
+                    this._chipUIList[index].y = this._curChipY;
+                } else {
+                    this._chipUIList[index].disabled = false;
+                }
             }
         }
 
@@ -980,24 +1046,21 @@ module gametoubao.page {
 
         protected onMouseClick(e: LEvent) {
             if (e.target != this._viewUI.btn_spread) {
-                this.showMenu(false);
+                this.menuTween(false);
             }
-
         }
 
-        showMenu(isShow: boolean) {
-            if (isShow) {
+        //菜单栏
+        private menuTween(isOpen: boolean) {
+            if (isOpen) {
                 this._viewUI.box_menu.visible = true;
-                this._viewUI.btn_spread.visible = false;
-                this._viewUI.box_menu.y = -this._viewUI.box_menu.height;
-                Laya.Tween.to(this._viewUI.box_menu, { y: 10 }, 300, Laya.Ease.circIn)
+                this._viewUI.box_menu.scale(0.2, 0.2);
+                this._viewUI.box_menu.alpha = 0;
+                Laya.Tween.to(this._viewUI.box_menu, { scaleX: 1, scaleY: 1, alpha: 1 }, 500, Laya.Ease.backInOut);
             } else {
-                if (this._viewUI.box_menu.y >= 0) {
-                    Laya.Tween.to(this._viewUI.box_menu, { y: -this._viewUI.box_menu.height }, 300, Laya.Ease.circIn, Handler.create(this, () => {
-                        this._viewUI.btn_spread.visible = true;
-                        this._viewUI.box_menu.visible = false;
-                    }));
-                }
+                Laya.Tween.to(this._viewUI.box_menu, { scaleX: 0.2, scaleY: 0.2, alpha: 0 }, 500, Laya.Ease.backInOut, Handler.create(this, () => {
+                    this._viewUI.box_menu.visible = false;
+                }));
             }
         }
 
@@ -1008,7 +1071,6 @@ module gametoubao.page {
             this.resetUI();
             this.resetData();
             this._game.sceneObjectMgr.clearOfflineObject();
-            Laya.timer.clear(this, this.kuangShanShuo);
         }
 
         private onUpdateGameNo(): void {
@@ -1056,7 +1118,7 @@ module gametoubao.page {
             this._viewUI.hulu.img_dice2.skin = StringU.substitute(PathGameTongyong.ui_tongyong_general + "effect/shaizi/shaizi{0}.png", parseInt(this._curGameDice[2]));
 
             if (this._curStatus > MAP_STATUS.PLAY_STATUS_ROLL_DICE) {
-                this._viewUI.hulu.ani1.gotoAndStop(65);
+                this._viewUI.hulu.ani1.gotoAndStop(55);
             }
         }
 
@@ -1095,19 +1157,15 @@ module gametoubao.page {
                         seat.qifu_type.visible = true;
                         seat.qifu_type.skin = this._qifuTypeImgUrl;
                         this.playTween1(seat.qifu_type, qifu_index);
-                    } 
-                     //时间戳变化 才加上祈福标志
+                    }
+                    //时间戳变化 才加上祈福标志
                     if (TongyongUtil.getIsHaveQiFu(unit, this._game.sync.serverTimeBys)) {
                         if (qifu_index && unitIndex == qifu_index) {
                             Laya.timer.once(2500, this, () => {
                                 seat.img_qifu.visible = true;
                                 seat.img_icon.skin = TongyongUtil.getHeadUrl(unit.GetHeadImg(), 2);
                             })
-                        } 
-                        // else {
-                        //     seat.img_qifu.visible = true;
-                        //     seat.img_icon.skin = TongyongUtil.getHeadUrl(unit.GetHeadImg(), 2);
-                        // }
+                        }
                     } else {
                         seat.img_qifu.visible = false;
                     }
@@ -1138,22 +1196,22 @@ module gametoubao.page {
 
         //初始化UI界面
         private initView(): void {
-            this._viewUI.box_menu.y = -290;
             this._viewUI.box_menu.zOrder = 99;
             this._viewUI.box_menu.visible = false;
             this._areaList = [];
             this._chipUIList = [];
             this._seatUIList = [];
-            this._chipGuangUIList = [];
             this._areaKuangUIList = [];
             this._txtBetUIList = [];
             this._htmlTextArr = [];
             for (let i: number = 0; i < 29; i++) {
                 this._areaList.push(this._viewUI["area" + i]);
-                this._areaList[i].on(LEvent.CLICK, this, this.onAreaBetClick, [i]);
-                this._areaKuangUIList.push(this._viewUI["kuang" + i]);
+                this._areaList[i].on(LEvent.MOUSE_OUT, this, this.onAreaBetMouseOut, [i]);
+                this._areaList[i].on(LEvent.MOUSE_DOWN, this, this.onAreaBetMouseDown, [i]);
+                this._areaList[i].on(LEvent.MOUSE_UP, this, this.onAreaBetMouseUp, [i]);
                 this._txtBetUIList.push(this._viewUI["txt_main" + i]);
                 this._txtBetUIList[i].text = "";
+                this._areaKuangUIList.push(this._viewUI["kuang" + i]);
                 this._areaKuangUIList[i].visible = false;
 
                 this._chipTotalList[i] = [];
@@ -1164,18 +1222,17 @@ module gametoubao.page {
             for (let i: number = 0; i < 5; i++) {
                 this._chipUIList.push(this._viewUI["btn_chip" + i]);
                 this._chipUIList[i].on(LEvent.CLICK, this, this.onSelectChip, [i]);
-                this._chipGuangUIList.push(this._viewUI["guang" + i]);
                 if (i == 0) {
                     this._curChipY = this._chipUIList[i].y;
-                    this._chipGuangUIList[i].visible = true;
-                } else {
-                    this._chipGuangUIList[i].visible = false;
                 }
             }
             for (let i: number = 0; i < 6; i++) {
                 this._seatUIList.push(this._viewUI["seat" + i]);
                 this._seatUIList[i].clip_money.visible = false;
                 this._seatUIList[i].on(LEvent.CLICK, this, this.onSelectSeat, [i]);
+                this._seatUIList[i].effWin.visible = false;
+                this._seatUIList[i].img_qifu.visible = false;
+                this._seatUIList[i].img_vip.visible = false;
             }
             this._viewUI.list_record.itemRender = this.createChildren("game_ui.toubao.component.ZouShiDianShuUI", MapRecordRender);
             this._viewUI.list_record.renderHandler = new Handler(this, this.renderHandler);
@@ -1185,6 +1242,7 @@ module gametoubao.page {
             }
             //主玩家UI
             this._viewUI.main_player.clip_money.visible = false;
+            this._viewUI.main_player.effWin.visible = false;
             //界面UI
             this._viewUI.txt_id.visible = false;
             this._viewUI.box_time.visible = false;
@@ -1213,7 +1271,8 @@ module gametoubao.page {
                 }
                 if (!this._chipArr) return;
                 for (let i = 0; i < this._chipArr.length; i++) {
-                    this._chipUIList[i].label = EnumToString.sampleChipNum(this._chipArr[i]);
+                    this._chipUIList[i].btn_num.label = EnumToString.sampleChipNum(this._chipArr[i]);
+                    this._chipUIList[i].btn_num.skin = StringU.substitute(PathGameTongyong.ui_tongyong_general + "tu_cm{0}.png", i);
                 }
                 if (!this._curChip) this.onSelectChip(0);
             }
@@ -1226,6 +1285,7 @@ module gametoubao.page {
             //界面UI
             for (let i = 0; i < 29; i++) {
                 this._txtBetUIList[i].text = "";
+                this._areaKuangUIList[i].visible = false;
             }
         }
 
@@ -1238,6 +1298,7 @@ module gametoubao.page {
             }
             this._betMainTotal = 0;
             this._betAllTotal = 0;
+            this._clipResult = [];
             this._mainPlayerBenefit = 0;
             this._lottery = "";
             this._toubaoMgr && (this._toubaoMgr.isReConnect = false);
@@ -1265,9 +1326,11 @@ module gametoubao.page {
                 this._viewUI.btn_repeat.off(LEvent.CLICK, this, this.onBtnClickWithTween);
                 this._viewUI.btn_record.off(LEvent.CLICK, this, this.onBtnClickWithTween);
                 this._viewUI.btn_chongzhi.off(LEvent.CLICK, this, this.onBtnClickWithTween);
-                this._viewUI.btn_playerList.off(LEvent.CLICK, this, this.onClickHandle);
+                this._viewUI.btn_playerList.off(LEvent.CLICK, this, this.onBtnClickWithTween);
                 for (let i: number = 0; i < this._areaList.length; i++) {
-                    this._areaList[i] && this._areaList[i].off(LEvent.CLICK, this, this.onAreaBetClick);
+                    this._areaList[i] && this._areaList[i].off(LEvent.MOUSE_OUT, this, this.onAreaBetMouseOut);
+                    this._areaList[i] && this._areaList[i].off(LEvent.MOUSE_DOWN, this, this.onAreaBetMouseDown);
+                    this._areaList[i] && this._areaList[i].off(LEvent.MOUSE_UP, this, this.onAreaBetMouseUp);
                 }
                 this._areaList = [];
                 for (let i: number = 0; i < this._chipUIList.length; i++) {
@@ -1309,7 +1372,7 @@ module gametoubao.page {
             super.close();
         }
     }
-    class MapRecordRender extends ui.nqp.game_ui.toubao.component.ZouShiDianShuUI {
+    class MapRecordRender extends ui.ajqp.game_ui.toubao.component.ZouShiDianShuUI {
         private _game: Game;
         private _data: any;
         constructor() {

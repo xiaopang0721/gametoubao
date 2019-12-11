@@ -3,7 +3,7 @@
 */
 module gametoubao.page {
 	export class ToubaoRoadPage extends game.gui.base.Page {
-		private _viewUI: ui.nqp.game_ui.toubao.TouBao_ZouShiTuUI;
+		private _viewUI: ui.ajqp.game_ui.toubao.TouBao_ZouShiTuUI;
 		private _isShenQing: boolean = false;
 		private _mapinfo: ToubaoMapInfo;
 
@@ -116,7 +116,7 @@ module gametoubao.page {
 		}
 	}
 
-	class MapRecordRender extends ui.nqp.game_ui.toubao.component.RecordRenderUI {
+	class MapRecordRender extends ui.ajqp.game_ui.toubao.component.RecordRenderUI {
 		private _game: Game;
 		private _data: any;
 		constructor() {
@@ -145,7 +145,7 @@ module gametoubao.page {
 		}
 	}
 
-	class ResultRender extends ui.nqp.game_ui.toubao.component.ZouShiDaXiaoUI {
+	class ResultRender extends ui.ajqp.game_ui.toubao.component.ZouShiDaXiaoUI {
 		private _game: Game;
 		private _data: any;
 		constructor() {
