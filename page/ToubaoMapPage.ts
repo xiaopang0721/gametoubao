@@ -176,7 +176,10 @@ module gametoubao.page {
         //帧间隔心跳
         deltaUpdate() {
             let bool = this._curStatus == MAP_STATUS.PLAY_STATUS_BET || this._curStatus == MAP_STATUS.PLAY_STATUS_SETTLE;
-            if (!bool) return;
+            if (!bool) {
+                this._viewUI.box_time.visible = false;
+                return;
+            }
             let curTime = this._game.sync.serverTimeBys;
             let time = Math.floor(this._countDown - curTime);
             this._viewUI.box_time.ani1.gotoAndStop(24);
@@ -838,7 +841,7 @@ module gametoubao.page {
                     this._viewUI.hulu.visible = false;
                     this.flyChipEffect();
                     if (!this._toubaoMgr.isReConnect) {
-                        Laya.timer.once(2200, this, () => {
+                        Laya.timer.once(2500, this, () => {
                             this.onUpdateSettleMoney();
                             if (this._clipResult && this._clipResult.length > 0) {
                                 for (let i = 0; i < this._clipResult.length; i++) {
