@@ -82,10 +82,10 @@ module gametoubao.page {
 				this._viewUI.btn_chuji.off(LEvent.CLICK, this, this.onBtnClickWithTween);
 				this._viewUI.btn_zhongji.off(LEvent.CLICK, this, this.onBtnClickWithTween);
 				this._viewUI.btn_gaoji.off(LEvent.CLICK, this, this.onBtnClickWithTween);
+				this._game.stopMusic();
+				Laya.Tween.clearAll(this);
 			}
 
-			this._game.stopMusic();
-			Laya.Tween.clearAll(this);
 			super.close();
 		}
 	}
