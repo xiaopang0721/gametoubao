@@ -13,10 +13,12 @@ module gametoubao {
         public static ADD_MONEY_FONT: any;
         //扣钱飘字
         public static SUB_MONEY_FONT: any;
+        //底分准入通用白字
+        public static WHITE_FONT: any;
 
         static init(): void {
             this.MONEY_FONT2 = {
-                source: PathGameTongyong.atlas_game_ui_tongyong+ "general.atlas",
+                source: PathGameTongyong.atlas_game_ui_tongyong + "general.atlas",
                 url: PathGameTongyong.ui_tongyong_general + 'clip_money1.png',
                 clipWidth: 16,
                 clipHeight: 22,
@@ -24,7 +26,7 @@ module gametoubao {
                 space: 0
             };
             this.RANK_FONT2 = {
-                source: PathGameTongyong.atlas_game_ui_tongyong+ "general.atlas",
+                source: PathGameTongyong.atlas_game_ui_tongyong + "general.atlas",
                 url: PathGameTongyong.ui_tongyong_general + 'clip_top.png',
                 clipWidth: 28,
                 clipHeight: 31,
@@ -59,6 +61,16 @@ module gametoubao {
                 clipHeight: 32,
                 clipX: 11,
                 space: -8
+            };
+
+            //底分准入通用白字
+            this.WHITE_FONT = {
+                source: PathGameTongyong.atlas_game_ui_tongyong + "hud.atlas",
+                url: PathGameTongyong.ui_tongyong_hud + 'clip_sz.png',
+                clipWidth: 17,
+                clipHeight: 23,
+                clipX: 11,
+                space: -4
             };
         }
         private _clip: ClipCell;

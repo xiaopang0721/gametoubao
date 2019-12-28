@@ -8,7 +8,8 @@ module gametoubao.page {
 		private _playerInfo: any;
 		private _listArr: any;
 		private _listState: any;
-		private _xianhong: number[] = [5000, 8000, 25000, 50000];
+		private _xianhongTemp: number[] = [5000, 8000, 25000, 50000];
+		private _xianhongClipList: ToubaoClip[] = [];
 
 		constructor(v: Game, onOpenFunc?: Function, onCloseFunc?: Function) {
 			super(v, onOpenFunc, onCloseFunc);
@@ -34,21 +35,30 @@ module gametoubao.page {
 		// 页面打开时执行函数
 		protected onOpen(): void {
 			super.onOpen();
-			this._viewUI.btn_xinshou.on(LEvent.CLICK, this, this.onBtnClickWithTween);
-			this._viewUI.btn_chuji.on(LEvent.CLICK, this, this.onBtnClickWithTween);
-			this._viewUI.btn_zhongji.on(LEvent.CLICK, this, this.onBtnClickWithTween);
-			this._viewUI.btn_gaoji.on(LEvent.CLICK, this, this.onBtnClickWithTween);
+			// this._viewUI.btn_xinshou.on(LEvent.CLICK, this, this.onBtnClickWithTween);
+			// this._viewUI.btn_chuji.on(LEvent.CLICK, this, this.onBtnClickWithTween);
+			// this._viewUI.btn_zhongji.on(LEvent.CLICK, this, this.onBtnClickWithTween);
+			// this._viewUI.btn_gaoji.on(LEvent.CLICK, this, this.onBtnClickWithTween);
 			(this._viewUI.view as TongyongHudPage).onOpen(this._game, ToubaoPageDef.GAME_NAME);
 			for (let index = 0; index < this._viewUI.box_right.numChildren; index++) {
 				this._viewUI.box_right._childs[index].visible = true;
 				Laya.Tween.from(this._viewUI.box_right._childs[index], {
 					x: 1280
-				}, 200 + index * 100, Laya.Ease.linearNone);
+				}, 200 + index * 100, Laya.Ease.linearNone, Handler.create(this, () => {
+					this._viewUI.box_right._childs[index].on(LEvent.CLICK, this, this.onBtnClickWithTween);
+				}));
 			}
 			this._game.playMusic(Path_game_toubao.music_toubao + "toubao_bgm.mp3");
 
-			for (let index = 0; index < this._xianhong.length; index++) {
-				this._viewUI["txt_xianhong" + index].text = this._xianhong[index].toString();
+			for (let index = 0; index < 4; index++) {
+				if (!this._xianhongClipList[index]) {
+					this._xianhongClipList[index] = new ToubaoClip(ToubaoClip.WHITE_FONT);
+					this._xianhongClipList[index].centerX = this._viewUI["txt_xianhong" + index].centerX;
+					this._xianhongClipList[index].centerY = this._viewUI["txt_xianhong" + index].centerY;
+					this._viewUI["txt_xianhong" + index].parent && this._viewUI["txt_xianhong" + index].parent.addChild(this._xianhongClipList[index]);
+					this._viewUI["txt_xianhong" + index].removeSelf();
+					this._xianhongClipList[index].setText(this._xianhongTemp[index], true, false, PathGameTongyong.ui_tongyong_hud + "tu_xh.png");
+				}
 			}
 		}
 
