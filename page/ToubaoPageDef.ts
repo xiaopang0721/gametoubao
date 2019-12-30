@@ -12,8 +12,6 @@ module gametoubao.page {
 		static PAGE_TOUBAO_BEGIN: string = "3";
 		//骰宝游戏规则界面
 		static PAGE_TOUBAO_RULE: string = "101";
-		//骰宝玩家列表界面
-		static PAGE_TOUBAO_PLAYER_LIST: string = "10";
 		//骰宝停止下注界面
 		static PAGE_TOUBAO_END: string = "11";
 		//骰宝走势图界面
@@ -26,7 +24,6 @@ module gametoubao.page {
 			PageDef._pageClassMap[ToubaoPageDef.PAGE_TOUBAO_MAP] = ToubaoMapPage;
 			PageDef._pageClassMap[ToubaoPageDef.PAGE_TOUBAO_BEGIN] = ToubaoBeginPage;
 			PageDef._pageClassMap[ToubaoPageDef.PAGE_TOUBAO_RULE] = ToubaoRulePage;
-			PageDef._pageClassMap[ToubaoPageDef.PAGE_TOUBAO_PLAYER_LIST] = ToubaoPlayerListPage;
 			PageDef._pageClassMap[ToubaoPageDef.PAGE_TOUBAO_END] = ToubaoEndPage;
 			PageDef._pageClassMap[ToubaoPageDef.PAGE_TOUBAO_ROAD] = ToubaoRoadPage;
 
