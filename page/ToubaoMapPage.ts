@@ -1055,7 +1055,7 @@ module gametoubao.page {
             for (let i = 0; i < this._betMainList.length; i++) {
                 betBefore += this._betMainList[i];
             }
-            if (!this._curChip) {
+            if (!this._curChip  || this._curChip > money|| this._curChip == -1) {
                 TongyongPageDef.ins.alertRecharge("老板，您的金币不足哦~\n补充点金币去大杀四方吧~", () => {
                     this._game.uiRoot.general.open(DatingPageDef.PAGE_CHONGZHI);
                 }, () => {
