@@ -79,9 +79,8 @@ module gametoubao.page {
             this._isNeedDuang = false;
             this._delta = 1000;
             this._asset = [
-                DatingPath.atlas_dating_ui + "qifu.atlas",
-                PathGameTongyong.atlas_game_ui_tongyong + "qifu.atlas",
                 Path_game_toubao.atlas_game_ui + "toubao.atlas",
+                PathGameTongyong.atlas_game_ui_tongyong + "qifu.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "hud.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "general.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "touxiang.atlas",

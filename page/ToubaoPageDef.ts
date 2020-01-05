@@ -28,9 +28,8 @@ module gametoubao.page {
 			PageDef._pageClassMap[ToubaoPageDef.PAGE_TOUBAO_ROAD] = ToubaoRoadPage;
 
 			this["__needLoadAsset"] = [
-				DatingPath.atlas_dating_ui + "qifu.atlas",
-				PathGameTongyong.atlas_game_ui_tongyong + "qifu.atlas",
                 Path_game_toubao.atlas_game_ui + "toubao.atlas",
+				PathGameTongyong.atlas_game_ui_tongyong + "qifu.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "hud.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "general.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "touxiang.atlas",
