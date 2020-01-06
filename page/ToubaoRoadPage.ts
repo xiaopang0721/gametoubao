@@ -13,6 +13,7 @@ module gametoubao.page {
 			this._isClickBlack = true;
 			this._isNeedDuang = false;
 			this._asset = [
+				PathGameTongyong.atlas_game_ui_tongyong + "dating.atlas",
 				PathGameTongyong.atlas_game_ui_tongyong + "general.atlas",
 				Path_game_toubao.atlas_game_ui + "toubao.atlas",
 			];
